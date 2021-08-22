@@ -63,7 +63,7 @@ function Navbar(props) {
       <AppBar position="static">
         <Toolbar>
           <Typography variant="h6" className={classes.title}>
-            <Link to="/">React Auth Hooks Fullstack</Link>
+            <Link to="/">Welcome To the Anime Space!</Link>
           </Typography>
 
           <NavLink activeStyle={{ color: "red" }} exact to={navLinkTitleOne}>
