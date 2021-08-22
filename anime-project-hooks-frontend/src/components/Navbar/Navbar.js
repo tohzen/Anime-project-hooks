@@ -2,8 +2,11 @@ import React, { useContext, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { AppBar, Toolbar, Typography, Button } from "@material-ui/core";
 import { NavLink, Link } from "react-router-dom";
-import Cookie from "js-cookie";
+import Cookies from "js-cookie";
+import { withRouter } from "react-router-dom";
+import axios from "axios";
 import { AuthContext } from "../../context/AuthContext";
+import checkAuthCookie from "../hooks/checkAuthCookie";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -17,17 +20,17 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function Navbar() {
+function Navbar(props) {
   const classes = useStyles();
+  const { logUserIn } = checkAuthCookie();
 
   useEffect(() => {
-    const cookie = Cookie.get("jwt-cookie");
-
-    console.log(cookie);
+    logUserIn();
   }, []);
 
   const {
     state: { user },
+    dispatch,
   } = useContext(AuthContext);
 
   const isUserLoggedIn = user ? true : false;
@@ -36,12 +39,31 @@ function Navbar() {
   const navLinkTitleTwo = isUserLoggedIn ? "/logout" : "/sign-up";
   const navLinkDisplayTwo = isUserLoggedIn ? "Logout" : "Sign up";
 
+  const logoutButton = isUserLoggedIn ? logout : () => {};
+
+  async function logout() {
+    try {
+      await axios.get('http://localhost:3001/api/users/logout')
+      dispatch({
+        type: "LOG_OUT",
+      });
+      Cookies.remove("jwt-cookie");
+      props.history.push("/login")
+
+
+    } catch (e) {
+      console.log(e)
+
+    }
+
+  }
+
   return (
     <div className={classes.root}>
       <AppBar position="static">
         <Toolbar>
           <Typography variant="h6" className={classes.title}>
-            <Link to="/">Anime Space</Link>
+            <Link to="/">React Auth Hooks Fullstack</Link>
           </Typography>
 
           <NavLink activeStyle={{ color: "red" }} exact to={navLinkTitleOne}>
@@ -51,7 +73,11 @@ function Navbar() {
           </NavLink>
 
           <NavLink activeStyle={{ color: "red" }} exact to={navLinkTitleTwo}>
-            <Button color="inherit" style={{ color: "white" }}>
+            <Button
+              color="inherit"
+              style={{ color: "white" }}
+              onClick={() => logoutButton()}
+            >
               {navLinkDisplayTwo}
             </Button>
           </NavLink>
@@ -61,4 +87,4 @@ function Navbar() {
   );
 }
 
-export default Navbar;
+export default withRouter(Navbar);
