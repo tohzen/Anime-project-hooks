@@ -8,6 +8,7 @@ const AnimeDetails = (props) => {
 
     const { fetchAnime, detailsArray, detailsTitle, setDetailsTitle, synopsis, setSynopsis, image_url, setImage_url, type, setType, episodes, setEpisodes, score, setScore} = useContext(AnimeContext)
 
+
     if(detailsArray != []) {
       setDetailsTitle(detailsArray.title)
       setSynopsis(detailsArray.synopsis)
